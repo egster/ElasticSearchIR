@@ -1,0 +1,70 @@
+POST /ir-group2/_search
+{
+    "query": {
+        "match": {
+            "content": {
+                "query": "cs bachelor course first year",
+                "analyzer": "my_analyzer"
+            }
+        }
+    }
+}
+
+POST /ir-group2/_search
+{
+    "query": {
+        "match": {
+            "content": {
+                "query": "studying abroad",
+                "analyzer": "my_analyzer"
+            }
+        }
+    }
+}
+
+PUT /ir-group2
+{   
+"settings" : { 
+   "analysis" : {
+       "filter" : {
+          "shingle":{
+              "type":"shingle",
+              "max_shingle_size":2,
+              "min_shingle_size":2,
+              "output_unigrams":"true"
+           },
+            "synonym" : {
+                "type" : "synonym",
+                "tokenizer": "whitespace",
+                "synonyms_path" : "synonyms.txt"
+            }
+       },
+       "analyzer" : {
+           "shingle_analyzer" : {
+               "type" : "custom",
+               "tokenizer" : "whitespace",
+               "filter" : ["standard", "lowercase", "shingle"]
+           },
+           "my_analyzer" : {
+               "type" : "custom",
+               "tokenizer" : "whitespace",
+               "filter" : ["standard", "lowercase", "synonym", "shingle"]
+           }
+       }
+   }
+},
+"mappings" : {
+   "doc" : {
+       "properties" : {
+           "content" : {
+               "type" : "string",
+               "analyzer" : "shingle_analyzer"
+           }
+       }
+   }
+}
+}
+
+GET /ir-group2/_analyze?analyzer=my_analyzer&text=cs first year bachelor courses
+
+GET /ir-group2/_analyze?analyzer=my_analyzer&text=studying abroad
