@@ -1,0 +1,141 @@
+GET /ir/_search?q=cs bachelor course first year
+GET /ir/_search?q=studying abroad
+
+POST /ir/_search
+{
+    "query": {
+        "match": {
+            "content": {
+                "query": "cs bachelor course first year"
+            }
+        }
+    }
+}
+
+POST /ir/_search
+{
+    "query": {
+        "match": {
+            "content": {
+                "query": "studying abroad"
+            }
+        }
+    }
+}
+
+POST /ir-ultimate/_search
+{
+    "query": {
+        "match": {
+            "content": {
+                "query": "cs bachelor course first year",
+                "analyzer": "my_analyzer2"
+            }
+        }
+    }
+}
+
+POST /ir-ultimate/_search
+{
+    "query": {
+        "match": {
+            "content": {
+                "query": "studying abroad",
+                "analyzer": "my_analyzer2"
+            }
+        }
+    }
+}
+
+GET /ir-ultimate/_search?&q=computer science
+
+DELETE /ir-ultimate
+
+PUT /ir-ultimate
+{   
+"settings" : { 
+   "analysis" : {
+       "filter" : {
+          "shingle":{
+              "type":"shingle",
+              "max_shingle_size":2,
+              "min_shingle_size":2,
+              "output_unigrams":"true"
+           },
+           "shingle_no_unigrams":{
+              "type":"shingle",
+              "max_shingle_size":2,
+              "min_shingle_size":2,
+              "output_unigrams":"false",
+              "output_unigrams_if_no_shingles": "true" 
+           },
+           "filter_stop":{
+              "type":"stop"
+           },
+            "synonym" : {
+                "type" : "synonym",
+                "synonyms_path" : "synonyms.txt"
+            }
+       },
+       "analyzer" : {
+            "synonym" : {
+                "tokenizer" : "whitespace",
+                "filter" : ["synonym"]
+            },
+           "shingle_analyzer" : {
+               "type" : "custom",
+               "tokenizer" : "whitespace",
+               "filter" : ["standard", "lowercase", "shingle"]
+           },
+           "my_analyzer" : {
+               "type" : "custom",
+               "tokenizer" : "whitespace",
+               "filter" : ["standard", "lowercase", "synonym", "shingle_no_unigrams"]
+           },
+           "my_analyzer2" : {
+               "type" : "custom",
+               "tokenizer" : "whitespace",
+               "filter" : ["standard", "lowercase", "synonym", "shingle"]
+           }
+       }
+   }
+},
+"mappings" : {
+   "doc" : {
+       "properties" : {
+           "content" : {
+               "type" : "string",
+               "analyzer" : "shingle_analyzer"
+           },
+           "title" : {
+               "type" : "string",
+               "analyzer" : "shingle_analyzer"
+           }
+       }
+   }
+}
+}
+
+GET /ir-ultimate/_analyze?analyzer=my_analyzer2&text=cs first year bachelor courses
+
+GET /ir-ultimate/_analyze?analyzer=synonym&text=computer science
+
+GET /ir-ultimate/_analyze?analyzer=shingle_analyzer&text=first year
+
+GET /ir-ultimate/_analyze?&text="first year"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
