@@ -3,7 +3,7 @@ POST /ir-group2/_search
     "query": {
         "match": {
             "content": {
-                "query": "cs bachelor course first year",
+                "query": "cs bachelor first year courses",
                 "analyzer": "my_analyzer"
             }
         }
@@ -21,6 +21,7 @@ POST /ir-group2/_search
         }
     }
 }
+GET ir-group2/_stats
 
 PUT /ir-group2
 {   
@@ -58,7 +59,7 @@ PUT /ir-group2
        "properties" : {
            "content" : {
                "type" : "string",
-               "analyzer" : "shingle_analyzer"
+               "analyzer" : "my_analyzer"
            }
        }
    }
